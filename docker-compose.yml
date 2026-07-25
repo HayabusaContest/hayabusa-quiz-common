@@ -1,0 +1,49 @@
+# 4リポジトリ(server / agent / viewer / common)を同じ親ディレクトリに横並びで
+# clone した状態で、この common リポジトリから起動する。
+#   1. .env に使うプロバイダの API キーを入れる(.env.example 参照)
+#   2. docker compose up --build
+# server:8080 / 観戦ビューア:8081 / agent×3
+#
+# 異なるモデルで対戦させたい場合は、各 agent サービスに LLM_TYPE 環境変数を足すか、
+# それぞれ別の config を与えてください。server の agent_count は agent 数に合わせること。
+
+services:
+  server:
+    build: ../hayabusa-quiz-server
+    ports:
+      - "8080:8080"
+
+  viewer:
+    build: ../hayabusa-quiz-viewer
+    ports:
+      - "8081:80"
+
+  agent1:
+    build: ../hayabusa-quiz-agent
+    environment:
+      AGENT_NAME: agent1
+      SERVER_URL: ws://server:8080/ws
+    env_file:
+      - .env
+    depends_on:
+      - server
+
+  agent2:
+    build: ../hayabusa-quiz-agent
+    environment:
+      AGENT_NAME: agent2
+      SERVER_URL: ws://server:8080/ws
+    env_file:
+      - .env
+    depends_on:
+      - server
+
+  agent3:
+    build: ../hayabusa-quiz-agent
+    environment:
+      AGENT_NAME: agent3
+      SERVER_URL: ws://server:8080/ws
+    env_file:
+      - .env
+    depends_on:
+      - server
