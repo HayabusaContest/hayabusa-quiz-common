@@ -1,0 +1,57 @@
+{
+  "protocol_version": "1.0.0",
+  "description": "hayabusa 早押しクイズ 対戦プロトコルの正典(machine-readable single source)。PROTOCOL.md はこの内容を人間向けに記述したもの。server(Go)/agent(Python)/viewer は各自の定数を持つが、tests/test_protocol_sync.py がこの JSON と一致するかを検査する。",
+  "transport": "websocket",
+  "endpoints": {
+    "agent": "/ws",
+    "viewer": "/viewer"
+  },
+  "requests": {
+    "NAME": {
+      "fields": [],
+      "reply": "エージェント名(文字列)",
+      "note": "接続直後の名乗り要求"
+    },
+    "QUESTION_START": {
+      "fields": ["question_id"],
+      "reply": null,
+      "note": "新しい問題の開始。エージェントは状態をリセットする"
+    },
+    "QUESTION_UPDATE": {
+      "fields": ["question_id", "cursor", "text"],
+      "reply": "pass か 回答(文字列)",
+      "note": "問題文が1文字進んだ。text はここまでの断片"
+    },
+    "RESULT": {
+      "fields": ["question_id", "answer", "scores"],
+      "reply": null,
+      "note": "その問題の正解と各自の得点"
+    },
+    "FINISH": {
+      "fields": ["scores"],
+      "reply": null,
+      "note": "全問終了・最終スコア。この後サーバは切断する"
+    }
+  },
+  "reply_keywords": {
+    "pass": "pass"
+  },
+  "view_events": {
+    "game_start": ["agents"],
+    "question_start": ["question_id", "total"],
+    "reveal": ["question_id", "cursor", "text"],
+    "answer": ["question_id", "cursor", "agent", "reply", "correct"],
+    "result": ["question_id", "text", "answer", "scores", "totals"],
+    "finish": ["scores"]
+  },
+  "modes": ["reveal_all", "first_answer", "benchmark"],
+  "judge": {
+    "default": "normalized_match",
+    "note": "全半角・かな・記号などを正規化した上での部分文字列一致"
+  },
+  "scoring": {
+    "formula": "total_chars - correct_cursor + 1",
+    "no_answer": 0,
+    "note": "正解が早い(cursor が小さい)ほど高得点。未正解は 0"
+  }
+}

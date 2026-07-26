@@ -1,6 +1,6 @@
 # hayabusa-quiz-common
 
-早押しクイズ AI 対戦システムの **共通リポジトリ** です。コンポーネント間の **プロトコル仕様([PROTOCOL.md](PROTOCOL.md))** と、開発時に全体をまとめて起動する **docker-compose** を提供します。システムの入口(全体像)も兼ねます。
+早押しクイズ AI 対戦システムの **共通リポジトリ** です。コンポーネント間の **プロトコルの正典**(machine-readable な [`protocol/protocol.json`](protocol/protocol.json) と人間向け [PROTOCOL.md](PROTOCOL.md))、3実装のズレを検知する **同期テスト**、開発時に全体をまとめて起動する **docker-compose** を提供します。システムの入口(全体像)も兼ねます。
 
 ## システム構成
 
@@ -11,11 +11,22 @@
 | [hayabusa-quiz-viewer](https://github.com/HayabusaContest/hayabusa-quiz-viewer) | 観戦ビューア(静的サイト) |
 | **hayabusa-quiz-common**(このリポジトリ) | プロトコル仕様 + 開発用 docker-compose |
 
-3コンポーネント(server / agent / viewer)は **WebSocket/JSON だけで連携**し、コードは共有しません。各コンポーネントの詳しい使い方はそれぞれの README を参照してください。
+3コンポーネント(server / agent / viewer)は **WebSocket/JSON だけで連携**します。ランタイムのコード共有はしませんが、**プロトコルの契約(request 定数・フィールド・モード・得点式)は本リポジトリの [`protocol/protocol.json`](protocol/protocol.json) を正典**とし、各実装がそれに一致することをテストで担保します。各コンポーネントの詳しい使い方はそれぞれの README を参照してください。
 
-## プロトコル
+## プロトコル(単一ソース + 同期テスト)
 
-サーバ→エージェントは JSON、エージェント→サーバは文字列1本。問題文を1文字ずつ配信し、各エージェントは `pass` か回答を返します(1問1回)。詳細は **[PROTOCOL.md](PROTOCOL.md)**。
+サーバ→エージェントは JSON、エージェント→サーバは文字列1本。問題文を1文字ずつ配信し、各エージェントは `pass` か回答を返します(1問1回)。
+
+- **正典**:[`protocol/protocol.json`](protocol/protocol.json)(machine-readable)。人間向けは **[PROTOCOL.md](PROTOCOL.md)**。
+- 各実装は自分の定数を持ちます:server=`protocol.go`、agent=`protocol.py`。
+- **ズレ検知**:4リポジトリを横並びに clone した状態で、
+
+  ```bash
+  cd hayabusa-quiz-common
+  python -m unittest discover -s tests    # protocol.json と server/agent の定数の一致を検査
+  ```
+
+  request/view/mode 定数・pass キーワード・protocol_version が食い違うと失敗します。プロトコルを変える時は protocol.json を更新し、両実装を追従させてください(互換破壊は semver を上げる)。
 
 ## 開発用:docker compose で一括起動
 
