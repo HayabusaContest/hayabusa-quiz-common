@@ -1,11 +1,6 @@
-"""プロトコル正典 protocol/protocol.json と、各実装の定数が一致するかを検査する。
+"""protocol.json と各実装(agent の protocol.py / server の protocol.go)の定数一致を検査する。
 
-横並び clone(common / server / agent が同じ親ディレクトリ)を前提に:
-  - agent の protocol.py(Request / ViewType / Mode / PASS / PROTOCOL_VERSION)
-  - server の protocol.go(const 文字列)
-が正典と食い違っていないことを確認する。実装が見つからない環境では該当テストを skip。
-
-実行: cd hayabusa-quiz-common && python -m unittest discover -s tests
+横並び clone を前提。実装が無ければ skip。実行: python -m unittest discover -s tests
 """
 import importlib.util
 import json

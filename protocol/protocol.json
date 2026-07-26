@@ -1,6 +1,6 @@
 {
   "protocol_version": "1.0.0",
-  "description": "hayabusa 早押しクイズ 対戦プロトコルの正典(machine-readable single source)。PROTOCOL.md はこの内容を人間向けに記述したもの。server(Go)/agent(Python)/viewer は各自の定数を持つが、tests/test_protocol_sync.py がこの JSON と一致するかを検査する。",
+  "description": "対戦プロトコルの正典(machine-readable)。人間向けは PROTOCOL.md、一致検査は tests/test_protocol_sync.py。",
   "transport": "websocket",
   "endpoints": {
     "agent": "/ws",
