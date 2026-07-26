@@ -16,7 +16,7 @@ from pathlib import Path
 
 COMMON = Path(__file__).resolve().parent.parent
 SPEC = json.loads((COMMON / "protocol" / "protocol.json").read_text(encoding="utf-8"))
-AGENT_PROTOCOL = COMMON.parent / "hayabusa-quiz-agent" / "protocol.py"
+AGENT_PROTOCOL = COMMON.parent / "hayabusa-quiz-agent" / "src" / "core" / "protocol.py"
 SERVER_PROTOCOL = COMMON.parent / "hayabusa-quiz-server" / "protocol.go"
 
 REQ = set(SPEC["requests"])
